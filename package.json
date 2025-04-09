@@ -1,11 +1,12 @@
 {
-  "name": "front_iac_collabo",
+  "name": "front_ia_collabo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "start": "node server.js",
     "lint": "next lint"
   },
   "dependencies": {
