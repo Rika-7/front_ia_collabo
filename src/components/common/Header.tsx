@@ -21,7 +21,7 @@ const navigationItems: NavigationItem[] = [
     icon: "/icons/mail.svg",
     label: "メッセージ",
     notificationCount: 5,
-    href: "/message",
+    href: "/messages",
   },
   {
     icon: "/icons/clipboard.svg",
