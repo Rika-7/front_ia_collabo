@@ -179,7 +179,7 @@ const continuousLine = [
   { year: "2023年", count: 30 },
 ];
 
-export default function DashboardTop() {
+export default function Dashboard() {
   // State for client-side rendering
   const [isMounted, setIsMounted] = useState(false);
   const [recharts, setRecharts] = useState<RechartsComponents | null>(null);
