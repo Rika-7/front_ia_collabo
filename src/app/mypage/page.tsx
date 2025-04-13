@@ -1,5 +1,6 @@
 import { Header } from "@/components/common/Header";
 import { CaseCard } from "@/components/ui/case_card";
+import Image from "next/image";
 
 export default function MyPage() {
   // In-progress cases data
@@ -54,16 +55,13 @@ export default function MyPage() {
           {/* Increased bottom margin even more */}
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
-              <svg
-                className="w-6 h-6 mr-2 text-gray-700"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
+              <Image
+                src="/icons/bird1.png"
+                width={24}
+                height={24}
+                alt="Bird icon"
+                className="mr-2"
+              />
               <h2 className="text-xl font-bold">進行中案件</h2>
             </div>
             <span className="text-lg font-bold">
@@ -95,16 +93,13 @@ export default function MyPage() {
         <div>
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
-              <svg
-                className="w-6 h-6 mr-2 text-gray-700"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-              </svg>
+              <Image
+                src="/icons/bird1.png"
+                width={24}
+                height={24}
+                alt="Bird icon"
+                className="mr-2"
+              />
               <h2 className="text-xl font-bold">終了案件</h2>
             </div>
             <span className="text-lg font-bold">
