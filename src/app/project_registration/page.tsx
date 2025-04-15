@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
 
 import { Header } from "@/components/common/Header";
 import {
@@ -12,25 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
 
 export default function Component() {
-
   const router = useRouter();
 
   const handleSubmit = () => {
@@ -43,7 +25,6 @@ export default function Component() {
   };
 
   const [selectedOption, setSelectedOption] = useState("研究分野のヒアリング");
-  const [date, setDate] = useState<Date | undefined>(undefined);
 
   const industries = [
     { value: "自動車", label: "自動車" },
@@ -220,7 +201,9 @@ export default function Component() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm mb-2">依頼企業の業種（任意）</label>
+              <label className="block text-sm mb-2">
+                依頼企業の業種（任意）
+              </label>
               <Select>
                 <SelectTrigger className="w-full border-gray-300 bg-white">
                   <SelectValue placeholder="選択してください" />
@@ -281,7 +264,6 @@ export default function Component() {
                 </SelectContent>
               </Select>
             </div>
-
 
             <div className="mb-6">
               <label className="block text-sm mb-2">納期（任意）</label>
