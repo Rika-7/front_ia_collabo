@@ -1,6 +1,5 @@
 'use client';
-
-import * as React from "react";
+import type * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -63,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = "案件検索" }) 
             <div className="flex gap-2.5 items-center text-base font-semibold cursor-pointer text-zinc-800">
               <div className="flex relative gap-2.5 items-center">
                 <Image
-                  src={item.icon}
+                  src={item.icon || "/placeholder.svg"}
                   alt={item.label}
                   width={24}
                   height={24}
@@ -86,7 +85,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = "案件検索" }) 
       {/* ユーザーアイコン */}
       <div className="flex gap-6 items-center mr-5">
         <i className="ti ti-bell max-sm:text-2xl" />
-        <div className="flex gap-2 items-center">
+        <Link href="/mypage" className="flex gap-2 items-center cursor-pointer">
           <Image
             src="/icons/user.svg"
             className="rounded-full"
@@ -98,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = "案件検索" }) 
           <span className="text-sm font-bold text-zinc-800">
             Satoru Moriaki
           </span>
-        </div>
+        </Link>
       </div>
     </header>
   );
