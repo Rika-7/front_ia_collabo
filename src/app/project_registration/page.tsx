@@ -15,16 +15,46 @@ import {
 export default function Component() {
   const router = useRouter();
 
-  const handleSubmit = () => {
-    // ★将来的にここに「フォームデータ送信 → DB登録」の処理を追加予定
-    // 例：
-    // await fetch('/api/register-case', { method: 'POST', body: JSON.stringify(formData) })
-
-    // 今は仮の遷移だけ
-    router.push("/project_registration/recommend"); // ←遷移先は適宜変更してください
-  };
-
   const [selectedOption, setSelectedOption] = useState("研究分野のヒアリング");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !description.trim()) {
+      alert("必須項目（タイトルと依頼詳細）を入力してください");
+      return;
+    }
+
+    const confirmed = confirm("AIが最適な研究者を検索します。実行してよろしいですか？");
+    if (!confirmed) return;
+
+    setIsLoading(true); // モーダル表示開始
+  
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/search-researchers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: selectedOption,
+          title: title,
+          description: description,
+          university: "東京科学大学", // 東京科学大学のみ
+          top_k: 10, // 10人の研究者を返す
+        }),
+      });
+  
+      const data = await response.json();
+      localStorage.setItem("recommendResults", JSON.stringify(data));
+      router.push("/project_registration/recommend");
+    } catch (error) {
+      console.error("エラー:", error);
+      alert("検索中にエラーが発生しました");
+    } finally {
+      setIsLoading(false); // 念のため非表示
+    }
+  };
+  
 
   const industries = [
     { value: "自動車", label: "自動車" },
@@ -90,7 +120,7 @@ export default function Component() {
           <div className="bg-gray-100 p-6 rounded">
             <div className="mb-6">
               <div className="flex items-start mb-2">
-                <label className="text-sm">依頼のカテゴリ</label>
+                <label className="text-sm">依頼のカテゴリ（必須項目）</label>
                 <span className="text-red-500 ml-1">*</span>
               </div>
 
@@ -160,22 +190,26 @@ export default function Component() {
               <input
                 type="text"
                 id="title"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 bg-white rounded"
                 placeholder="タイトルを入力してください"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
             <div className="mb-6">
               <div className="flex items-start mb-2">
                 <label htmlFor="details" className="text-sm">
-                  依頼詳細
+                  依頼詳細（必須項目）
                 </label>
                 <span className="text-red-500 ml-1">*</span>
               </div>
               <textarea
                 id="details"
-                className="w-full p-2 border border-gray-300 rounded h-32"
+                className="w-full p-2 border border-gray-300 bg-white rounded h-32"
                 placeholder="案件の背景を記載してください"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
 
@@ -292,12 +326,22 @@ export default function Component() {
                 className="px-10 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-700 active:bg-blue-800 transition-colors"
                 onClick={handleSubmit}
               >
-                登録する
+                検索する
               </button>
             </div>
           </div>
         </div>
       </div>
+      
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900/50 z-50">
+          <div className="bg-white p-6 rounded shadow-lg text-center max-w-sm w-full mx-4">
+            <p className="text-lg font-medium mb-4">AIが最適な研究者を検索しています</p>
+            <div className="animate-pulse text-gray-600">少々お待ちください...</div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
