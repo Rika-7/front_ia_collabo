@@ -10,11 +10,15 @@ interface NavigationItem {
   href: string;
 }
 
+// Updated navigation items to match the image
 const navigationItems: NavigationItem[] = [
-  { icon: "/icons/clipboard.svg", label: "マイページ", href: "/mypage" },
-
   {
-    icon: "/icons/search.svg",
+    icon: "/icons/clipboard.svg",
+    label: "マイページ",
+    href: "/mypage",
+  },
+  {
+    icon: "/icons/pen.svg",
     label: "案件登録",
     href: "/project_registration",
   },
@@ -25,9 +29,14 @@ const navigationItems: NavigationItem[] = [
     href: "/message",
   },
   {
-    icon: "/icons/clipboard.svg",
+    icon: "/icons/dashboard.svg",
     label: "ダッシュボード",
     href: "/dashboard",
+  },
+  {
+    icon: "/icons/search.svg",
+    label: "企業依頼案件",
+    href: "/search_company_projects",
   },
 ];
 
@@ -52,28 +61,28 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = "案件検索" }) 
       </div>
 
       {/* メニューアイコン */}
-      <nav className="flex gap-12 items-center ml-10">
+      <nav className="flex gap-6 items-center justify-center flex-1">
         {navigationItems.map((item, index) => (
           <Link
             key={index}
             href={item.href}
-            className="flex flex-col items-center relative pb-1"
+            className="flex items-center relative pb-1"
           >
-            <div className="flex gap-2.5 items-center text-base font-semibold cursor-pointer text-zinc-800">
-              <div className="flex relative gap-2.5 items-center">
+            <div className="flex items-center gap-2 text-base font-semibold cursor-pointer text-zinc-800">
+              <div className="relative">
                 <Image
                   src={item.icon || "/placeholder.svg"}
                   alt={item.label}
                   width={24}
                   height={24}
                 />
-                <span>{item.label}</span>
                 {item.notificationCount && item.notificationCount > 0 && (
-                  <div className="absolute -top-2 w-6 h-6 text-sm font-bold bg-red-500 rounded-full right-[-24px] text-white flex items-center justify-center">
+                  <div className="absolute -top-2 w-5 h-5 text-xs font-bold bg-red-500 rounded-full -right-2 text-white flex items-center justify-center">
                     {item.notificationCount}
                   </div>
                 )}
               </div>
+              <span className="text-sm">{item.label}</span>
             </div>
             {item.label === currentPage && (
               <div className="h-1 bg-violet-900 w-full absolute bottom-0 rounded-t"></div>
