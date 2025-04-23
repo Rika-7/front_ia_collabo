@@ -4,16 +4,20 @@
 import React from "react";
 import dynamic from "next/dynamic";
 
-const ReactWordcloud = dynamic(() => import("react-wordcloud"), { ssr: false });
+// Import your existing WordCloud component instead of react-wordcloud
+const WordCloudDynamic = dynamic(
+  () => import("@/components/common/WordCloud"),
+  { ssr: false }
+);
 
-type Word = {
+interface WordItem {
   text: string;
   value: number;
-};
+}
 
-type Props = {
-  words: Word[];
-};
+interface Props {
+  words: WordItem[];
+}
 
 const WordCloudClient: React.FC<Props> = ({ words }) => {
   if (!words || words.length === 0 || !words[0]?.text) {
@@ -21,13 +25,14 @@ const WordCloudClient: React.FC<Props> = ({ words }) => {
   }
 
   return (
-    <ReactWordcloud
+    <WordCloudDynamic
       words={words}
-      options={{
-        rotations: 2,
-        rotationAngles: [-45, 0],
-        fontSizes: [20, 60],
-      }}
+      width={600}
+      height={400}
+      fontSize={20}
+      fontFamily="Arial"
+      padding={5}
+      rotate={0}
     />
   );
 };
