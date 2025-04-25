@@ -1,22 +1,16 @@
-// components/WordCloudClient.tsx
 "use client";
 
 import React from "react";
 import dynamic from "next/dynamic";
+import { WordCloudItem } from "@/types/dashboard";
 
-// Import your existing WordCloud component instead of react-wordcloud
 const WordCloudDynamic = dynamic(
   () => import("@/components/common/WordCloud"),
   { ssr: false }
 );
 
-interface WordItem {
-  text: string;
-  value: number;
-}
-
 interface Props {
-  words: WordItem[];
+  words: WordCloudItem[];
 }
 
 const WordCloudClient: React.FC<Props> = ({ words }) => {
