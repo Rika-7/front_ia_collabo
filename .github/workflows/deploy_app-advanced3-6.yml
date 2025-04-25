@@ -61,4 +61,4 @@ jobs:
           app-name: 'app-advanced3-6'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E56D0A782BB14B71BAC28AF882127A00 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_42BEB974C28244BEB464420DF6C61476 }}
