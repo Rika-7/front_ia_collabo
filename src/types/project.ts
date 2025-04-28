@@ -15,3 +15,15 @@ export interface ProjectsResponse {
   projects: Project[];
   total: number;
 }
+
+export interface Researcher {
+  researcher_id: string;
+  name: string;
+  university: string;
+  affiliation: string;
+  position: string;
+  research_field: string;
+  keywords: string;
+  explanation: string;
+  score: number;
+}
