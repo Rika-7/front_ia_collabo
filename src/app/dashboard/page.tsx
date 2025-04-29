@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import { Header } from "@/components/common/Header";
 import {
-  ResponsiveContainer,
   LineChart,
   Line,
   BarChart,
@@ -19,7 +18,20 @@ import {
   Cell,
 } from "recharts";
 import WordCloud from "@/components/common/WordCloud";
+// Import the types from our types folder
+import {
+  IndustryAcademiaRow,
+  CompanyRow,
+  UniversityRow,
+  ChartData,
+  WordCloudItem,
+  CompanyMonthData,
+  UniversityMonthData,
+} from "@/types/dashboard";
+// Import the ChartCard component from ui folder
+import ChartCard from "@/components/ui/chart_card";
 
+<<<<<<< HEAD
 interface IndustryAcademiaRow {
   月: string;
   特許出願件数: string;
@@ -78,6 +90,8 @@ interface UniversityMonthData {
   match: number;
 }
 
+=======
+>>>>>>> daf648c3b9832f5d530bf8705b4449388decabc8
 export default function DashboardPage() {
   const [dateFilter, setDateFilter] = useState({
     start: "2025-01",
@@ -92,8 +106,12 @@ export default function DashboardPage() {
   const [contracts, setContracts] = useState<any[]>([]);
   const [faculties, setFaculties] = useState<ChartData[]>([]);
   const [contractBreakdown, setContractBreakdown] = useState<ChartData[]>([]);
-  const [licenseCounts, setLicenseCounts] = useState<any[]>([]);
-  const [licenseRevenue, setLicenseRevenue] = useState<any[]>([]);
+  const [licenseCounts, setLicenseCounts] = useState<
+    { month: string; value: number }[]
+  >([]);
+  const [licenseRevenue, setLicenseRevenue] = useState<
+    { month: string; value: number }[]
+  >([]);
 
   const [companyData, setCompanyData] = useState<CompanyMonthData[]>([]);
   const [industryDist, setIndustryDist] = useState<ChartData[]>([]);
@@ -101,7 +119,9 @@ export default function DashboardPage() {
   const [areaDist, setAreaDist] = useState<ChartData[]>([]);
   const [keywordData, setKeywordData] = useState<WordCloudItem[]>([]);
 
-  const [universityData, setUniversityData] = useState<UniversityMonthData[]>([]);
+  const [universityData, setUniversityData] = useState<UniversityMonthData[]>(
+    []
+  );
   const [fieldDist, setFieldDist] = useState<ChartData[]>([]);
   const [budgetHist, setBudgetHist] = useState<ChartData[]>([]);
   const [positionRank, setPositionRank] = useState<ChartData[]>([]);
@@ -165,7 +185,11 @@ export default function DashboardPage() {
       }))
     );
 
-    const formatGrouped = <T,>(rows: T[], key: keyof T, countField: keyof T): ChartData[] => {
+    const formatGrouped = <T,>(
+      rows: T[],
+      key: keyof T,
+      countField: keyof T
+    ): ChartData[] => {
       const map: Record<string, number> = {};
       rows.forEach((row) => {
         const keyVal = String(row[key]);
@@ -194,11 +218,21 @@ export default function DashboardPage() {
     filteredUniversity.forEach((row) => {
       const month = row["月"];
       if (!universityMonthMap[month]) {
-        universityMonthMap[month] = { researchers: new Set(), access: 0, match: 0 };
+        universityMonthMap[month] = {
+          researchers: new Set(),
+          access: 0,
+          match: 0,
+        };
       }
       universityMonthMap[month].researchers.add(row["研究者名"]);
-      universityMonthMap[month].access += parseInt(row["アクセス数"] || "0", 10);
-      universityMonthMap[month].match += parseInt(row["マッチング数"] || "0", 10);
+      universityMonthMap[month].access += parseInt(
+        row["アクセス数"] || "0",
+        10
+      );
+      universityMonthMap[month].match += parseInt(
+        row["マッチング数"] || "0",
+        10
+      );
     });
 
     setUniversityData(
@@ -237,7 +271,6 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-white">
       <Header currentPage="ダッシュボード" />
       <main className="container mx-auto p-6 space-y-10">
-  
         {/* フィルターUI */}
         <div className="flex justify-end gap-4">
           <label className="text-sm font-medium">
@@ -247,7 +280,9 @@ export default function DashboardPage() {
               value={dateFilter.start}
               min="2000-01"
               max="2050-12"
-              onChange={(e) => setDateFilter({ ...dateFilter, start: e.target.value })}
+              onChange={(e) =>
+                setDateFilter({ ...dateFilter, start: e.target.value })
+              }
               className="ml-2 border px-2 py-1 rounded"
             />
           </label>
@@ -258,12 +293,14 @@ export default function DashboardPage() {
               value={dateFilter.end}
               min="2000-01"
               max="2050-12"
-              onChange={(e) => setDateFilter({ ...dateFilter, end: e.target.value })}
+              onChange={(e) =>
+                setDateFilter({ ...dateFilter, end: e.target.value })
+              }
               className="ml-2 border px-2 py-1 rounded"
             />
           </label>
         </div>
-  
+
         <div className="text-sm text-gray-500 mb-8">
           現在の期間フィルタ: {dateFilter.start} ～ {dateFilter.end}
         </div>
@@ -283,16 +320,16 @@ export default function DashboardPage() {
   </BarChart>
 </ChartCard>
 
-        <ChartCard title="学部別出願件数">
-          <BarChart data={faculties} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#82ca9d" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="学部別出願件数">
+            <BarChart data={faculties} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#82ca9d" />
+            </BarChart>
+          </ChartCard>
 
         <ChartCard title="契約件数推移">
   <BarChart
@@ -308,32 +345,37 @@ export default function DashboardPage() {
 </ChartCard>
 
 
-        <ChartCard title="契約数内訳">
-          <PieChart>
-            <Pie
-              data={contractBreakdown}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label
-            >
-              {contractBreakdown.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={
-                    ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8", "#FF69B4"][
-                      index % 6
-                    ]
-                  }
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ChartCard>
+          <ChartCard title="契約数内訳">
+            <PieChart>
+              <Pie
+                data={contractBreakdown}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {contractBreakdown.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      [
+                        "#0088FE",
+                        "#00C49F",
+                        "#FFBB28",
+                        "#FF8042",
+                        "#8884d8",
+                        "#FF69B4",
+                      ][index % 6]
+                    }
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ChartCard>
 
         <ChartCard title="特許ライセンス件数推移">
   <BarChart
@@ -351,152 +393,163 @@ export default function DashboardPage() {
 </ChartCard>
 
 
-        <ChartCard title="特許ライセンス収入推移">
-          <LineChart data={licenseRevenue}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="value" stroke="#FF8042" />
-          </LineChart>
-        </ChartCard>
-      </div>
+          <ChartCard title="特許ライセンス収入推移">
+            <LineChart data={licenseRevenue}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="value" stroke="#FF8042" />
+            </LineChart>
+          </ChartCard>
+        </div>
 
-      <h2 className="text-2xl font-bold mt-10 mb-4">企業データ</h2>
-      <div className="grid grid-cols-2 gap-6">
-        <ChartCard title="登録企業数の推移">
-          <LineChart data={companyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="companies" stroke="#8884d8" />
-          </LineChart>
-        </ChartCard>
+        <h2 className="text-2xl font-bold mt-10 mb-4">企業データ</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <ChartCard title="登録企業数の推移">
+            <LineChart data={companyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="companies" stroke="#8884d8" />
+            </LineChart>
+          </ChartCard>
 
-        <ChartCard title="登録案件数の推移">
-          <BarChart data={companyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="cases" fill="#82ca9d" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="登録案件数の推移">
+            <BarChart data={companyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="cases" fill="#82ca9d" />
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="業種別案件分布">
-          <BarChart data={industryDist} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#ffc658" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="業種別案件分布">
+            <BarChart data={industryDist} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#ffc658" />
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="依頼企業ランキング（件数順）">
-          <BarChart data={topCompanies} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="依頼企業ランキング（件数順）">
+            <BarChart data={topCompanies} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="エリア別依頼企業の分布">
-          <PieChart>
-            <Pie
-              data={areaDist}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label
-            >
-              {areaDist.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"][index % 5]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ChartCard>
+          <ChartCard title="エリア別依頼企業の分布">
+            <PieChart>
+              <Pie
+                data={areaDist}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {areaDist.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"][
+                        index % 5
+                      ]
+                    }
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ChartCard>
 
-        <ChartCard title="依頼キーワードトレンド">
-          {keywordData.length > 0 ? (
-            <WordCloud words={keywordData} width={300} height={250} fontSize={16} />
-          ) : (
-            <div className="text-center text-gray-500 pt-12">データを読み込み中...</div>
-          )}
-        </ChartCard>
-      </div>
+          <ChartCard title="依頼キーワードトレンド">
+            {keywordData.length > 0 ? (
+              <WordCloud
+                words={keywordData}
+                width={300}
+                height={250}
+                fontSize={16}
+              />
+            ) : (
+              <div className="text-center text-gray-500 pt-12">
+                データを読み込み中...
+              </div>
+            )}
+          </ChartCard>
+        </div>
 
-      <h2 className="text-2xl font-bold mt-10 mb-4">大学内データ</h2>
-      <div className="grid grid-cols-2 gap-6">
-        <ChartCard title="登録研究者数の推移">
-          <LineChart data={universityData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="researchers" stroke="#8884d8" />
-          </LineChart>
-        </ChartCard>
+        <h2 className="text-2xl font-bold mt-10 mb-4">大学内データ</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <ChartCard title="登録研究者数の推移">
+            <LineChart data={universityData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="researchers" stroke="#8884d8" />
+            </LineChart>
+          </ChartCard>
 
-        <ChartCard title="アクセス数推移">
-          <LineChart data={universityData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="access" stroke="#82ca9d" />
-          </LineChart>
-        </ChartCard>
+          <ChartCard title="アクセス数推移">
+            <LineChart data={universityData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="access" stroke="#82ca9d" />
+            </LineChart>
+          </ChartCard>
 
-        <ChartCard title="マッチング数推移">
-          <BarChart data={universityData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="match" fill="#ffc658" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="マッチング数推移">
+            <BarChart data={universityData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="match" fill="#ffc658" />
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="分野別研究者数">
-          <BarChart data={fieldDist} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="分野別研究者数">
+            <BarChart data={fieldDist} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ChartCard>
 
-        <ChartCard title="希望予算の分布">
-          <BarChart data={budgetHist} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#82ca9d" />
-          </BarChart>
-        </ChartCard>
+          <ChartCard title="希望予算の分布">
+            <BarChart data={budgetHist} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#82ca9d" />
+            </BarChart>
+          </ChartCard>
 
         <ChartCard title="希望職位ランキング">
           <BarChart data={positionRank} layout="vertical">
@@ -530,3 +583,5 @@ function ChartCard({ title, children }: ChartCardProps) {
     </div>
   );
 }
+
+// ChartCard component has been moved to its own file
