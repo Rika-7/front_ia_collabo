@@ -5,19 +5,19 @@ import { Header } from "@/components/common/Header";
 export default function MessagePage() {
   const messages = [
     {
-      university: "●●大学",
+      university: "東京科学大学",
       department: "人材開発",
       professor: "山田教授",
       subject: "最短の火曜日はご予定いかがでしょうか",
     },
     {
-      university: "●●大学",
+      university: "東京科学大学",
       department: "人材開発",
       professor: "田中教授",
       subject: "最短の火曜日はご予定いかがでしょうか",
     },
     {
-      university: "●●大学",
+      university: "東京科学大学",
       department: "人材開発",
       professor: "佐藤教授",
       subject: "最短の火曜日はご予定いかがでしょうか",
@@ -54,7 +54,9 @@ export default function MessagePage() {
               >
                 <div className="text-sm text-gray-700">
                   <div className="font-semibold">{msg.university}</div>
-                  <div>{msg.department} {msg.professor}</div>
+                  <div>
+                    {msg.department} {msg.professor}
+                  </div>
                 </div>
                 <div className="text-sm text-gray-600">{msg.subject}</div>
               </div>
