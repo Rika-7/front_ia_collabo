@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import { Header } from "@/components/common/Header";
 import {
+  ResponsiveContainer,
   LineChart,
   Line,
   BarChart,
@@ -31,7 +32,6 @@ import {
 // Import the ChartCard component from ui folder
 import ChartCard from "@/components/ui/chart_card";
 
-<<<<<<< HEAD
 interface IndustryAcademiaRow {
   月: string;
   特許出願件数: string;
@@ -90,8 +90,6 @@ interface UniversityMonthData {
   match: number;
 }
 
-=======
->>>>>>> daf648c3b9832f5d530bf8705b4449388decabc8
 export default function DashboardPage() {
   const [dateFilter, setDateFilter] = useState({
     start: "2025-01",
