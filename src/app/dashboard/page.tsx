@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Papa from "papaparse";
 import { Header } from "@/components/common/Header";
 import {
-  ResponsiveContainer,
   LineChart,
   Line,
   BarChart,
@@ -32,64 +31,6 @@ import {
 // Import the ChartCard component from ui folder
 import ChartCard from "@/components/ui/chart_card";
 
-interface IndustryAcademiaRow {
-  月: string;
-  特許出願件数: string;
-  学部: string;
-  学部別出願件数: string;
-  契約件数: string;
-  MTA: string;
-  受託研究: string;
-  共同研究: string;
-  ライセンス: string;
-  譲渡: string;
-  その他: string;
-  特許ライセンス件数: string;
-  特許ライセンス収入: string;
-}
-
-interface CompanyRow {
-  月: string;
-  企業名: string;
-  業種: string;
-  案件数: string;
-  依頼キーワード: string;
-  エリア: string;
-}
-
-interface UniversityRow {
-  月: string;
-  研究者名: string;
-  分野: string;
-  希望予算: string;
-  希望職位: string;
-  アクセス数: string;
-  マッチング数: string;
-}
-
-interface ChartData {
-  name: string;
-  value: number;
-}
-
-interface WordCloudItem {
-  text: string;
-  value: number;
-}
-
-interface CompanyMonthData {
-  month: string;
-  companies: number;
-  cases: number;
-}
-
-interface UniversityMonthData {
-  month: string;
-  researchers: number;
-  access: number;
-  match: number;
-}
-
 export default function DashboardPage() {
   const [dateFilter, setDateFilter] = useState({
     start: "2025-01",
@@ -100,8 +41,12 @@ export default function DashboardPage() {
   const [companyRaw, setCompanyRaw] = useState<CompanyRow[]>([]);
   const [universityRaw, setUniversityRaw] = useState<UniversityRow[]>([]);
 
-  const [patents, setPatents] = useState<any[]>([]);
-  const [contracts, setContracts] = useState<any[]>([]);
+  const [patents, setPatents] = useState<{ month: string; value: number }[]>(
+    []
+  );
+  const [contracts, setContracts] = useState<
+    { month: string; value: number }[]
+  >([]);
   const [faculties, setFaculties] = useState<ChartData[]>([]);
   const [contractBreakdown, setContractBreakdown] = useState<ChartData[]>([]);
   const [licenseCounts, setLicenseCounts] = useState<
@@ -130,13 +75,29 @@ export default function DashboardPage() {
       fetch("/data/company_data.csv").then((res) => res.text()),
       fetch("/data/university_data.csv").then((res) => res.text()),
     ]).then(([iaText, companyText, universityText]) => {
-      setIaRaw(Papa.parse<IndustryAcademiaRow>(iaText, { header: true, skipEmptyLines: true }).data);
-      setCompanyRaw(Papa.parse<CompanyRow>(companyText, { header: true, skipEmptyLines: true }).data);
-      setUniversityRaw(Papa.parse<UniversityRow>(universityText, { header: true, skipEmptyLines: true }).data);
+      setIaRaw(
+        Papa.parse<IndustryAcademiaRow>(iaText, {
+          header: true,
+          skipEmptyLines: true,
+        }).data
+      );
+      setCompanyRaw(
+        Papa.parse<CompanyRow>(companyText, {
+          header: true,
+          skipEmptyLines: true,
+        }).data
+      );
+      setUniversityRaw(
+        Papa.parse<UniversityRow>(universityText, {
+          header: true,
+          skipEmptyLines: true,
+        }).data
+      );
     });
   }, []);
 
-  const isInRange = (month: string) => month >= dateFilter.start && month <= dateFilter.end;
+  const isInRange = (month: string) =>
+    month >= dateFilter.start && month <= dateFilter.end;
 
   useEffect(() => {
     if (!iaRaw.length) return;
@@ -145,26 +106,55 @@ export default function DashboardPage() {
     const sum = (arr: IndustryAcademiaRow[], key: keyof IndustryAcademiaRow) =>
       arr.reduce((acc, cur) => acc + parseInt(cur[key] || "0", 10), 0);
 
-    setPatents(filteredIa.map(row => ({ month: row["月"], value: parseInt(row["特許出願件数"] || "0", 10) })));
-    const facultyMap: Record<string, number> = {};
-    filteredIa.forEach(row => {
-      facultyMap[row["学部"]] = (facultyMap[row["学部"]] || 0) + parseInt(row["学部別出願件数"] || "0", 10);
-    });
-    setFaculties(Object.entries(facultyMap).map(([name, value]) => ({ name, value })));
-    setContracts(filteredIa.map(row => ({ month: row["月"], value: parseInt(row["契約件数"] || "0", 10) })));
-    setContractBreakdown(
-      ["MTA", "受託研究", "共同研究", "ライセンス", "譲渡", "その他"].map(name => ({
-        name,
-        value: sum(filteredIa, name as keyof IndustryAcademiaRow),
+    setPatents(
+      filteredIa.map((row) => ({
+        month: row["月"],
+        value: parseInt(row["特許出願件数"] || "0", 10),
       }))
     );
-    setLicenseCounts(filteredIa.map(row => ({ month: row["月"], value: parseInt(row["特許ライセンス件数"] || "0", 10) })));
-    setLicenseRevenue(filteredIa.map(row => ({ month: row["月"], value: parseInt(row["特許ライセンス収入"] || "0", 10) })));
+    const facultyMap: Record<string, number> = {};
+    filteredIa.forEach((row) => {
+      facultyMap[row["学部"]] =
+        (facultyMap[row["学部"]] || 0) +
+        parseInt(row["学部別出願件数"] || "0", 10);
+    });
+    setFaculties(
+      Object.entries(facultyMap).map(([name, value]) => ({ name, value }))
+    );
+    setContracts(
+      filteredIa.map((row) => ({
+        month: row["月"],
+        value: parseInt(row["契約件数"] || "0", 10),
+      }))
+    );
+    setContractBreakdown(
+      ["MTA", "受託研究", "共同研究", "ライセンス", "譲渡", "その他"].map(
+        (name) => ({
+          name,
+          value: sum(filteredIa, name as keyof IndustryAcademiaRow),
+        })
+      )
+    );
+    setLicenseCounts(
+      filteredIa.map((row) => ({
+        month: row["月"],
+        value: parseInt(row["特許ライセンス件数"] || "0", 10),
+      }))
+    );
+    setLicenseRevenue(
+      filteredIa.map((row) => ({
+        month: row["月"],
+        value: parseInt(row["特許ライセンス収入"] || "0", 10),
+      }))
+    );
   }, [iaRaw, dateFilter]);
 
   useEffect(() => {
     const filteredCompany = companyRaw.filter((row) => isInRange(row["月"]));
-    const companyMonthMap: Record<string, { companies: Set<string>; cases: number }> = {};
+    const companyMonthMap: Record<
+      string,
+      { companies: Set<string>; cases: number }
+    > = {};
 
     filteredCompany.forEach((row) => {
       const month = row["月"];
@@ -198,7 +188,11 @@ export default function DashboardPage() {
     };
 
     setIndustryDist(formatGrouped(filteredCompany, "業種", "案件数"));
-    setTopCompanies(formatGrouped(filteredCompany, "企業名", "案件数").sort((a, b) => b.value - a.value).slice(0, 10));
+    setTopCompanies(
+      formatGrouped(filteredCompany, "企業名", "案件数")
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10)
+    );
     setAreaDist(formatGrouped(filteredCompany, "エリア", "案件数"));
 
     const keywordMap: Record<string, number> = {};
@@ -206,12 +200,19 @@ export default function DashboardPage() {
       const keyword = row["依頼キーワード"];
       if (keyword) keywordMap[keyword] = (keywordMap[keyword] || 0) + 1;
     });
-    setKeywordData(Object.entries(keywordMap).map(([text, value]) => ({ text, value })));
+    setKeywordData(
+      Object.entries(keywordMap).map(([text, value]) => ({ text, value }))
+    );
   }, [companyRaw, dateFilter]);
 
   useEffect(() => {
-    const filteredUniversity = universityRaw.filter((row) => isInRange(row["月"]));
-    const universityMonthMap: Record<string, { researchers: Set<string>; access: number; match: number }> = {};
+    const filteredUniversity = universityRaw.filter((row) =>
+      isInRange(row["月"])
+    );
+    const universityMonthMap: Record<
+      string,
+      { researchers: Set<string>; access: number; match: number }
+    > = {};
 
     filteredUniversity.forEach((row) => {
       const month = row["月"];
@@ -242,7 +243,11 @@ export default function DashboardPage() {
       }))
     );
 
-    const formatGrouped = <T,>(rows: T[], key: keyof T, countField: keyof T): ChartData[] => {
+    const formatGrouped = <T,>(
+      rows: T[],
+      key: keyof T,
+      countField: keyof T
+    ): ChartData[] => {
       const map: Record<string, number> = {};
       rows.forEach((row) => {
         const keyVal = String(row[key]);
@@ -261,8 +266,14 @@ export default function DashboardPage() {
       const label = `${bin}万円`;
       budgetMap[label] = (budgetMap[label] || 0) + 1;
     });
-    setBudgetHist(Object.entries(budgetMap).map(([name, value]) => ({ name, value })));
-    setPositionRank(formatGrouped(filteredUniversity, "希望職位", "アクセス数").sort((a, b) => b.value - a.value));
+    setBudgetHist(
+      Object.entries(budgetMap).map(([name, value]) => ({ name, value }))
+    );
+    setPositionRank(
+      formatGrouped(filteredUniversity, "希望職位", "アクセス数").sort(
+        (a, b) => b.value - a.value
+      )
+    );
   }, [universityRaw, dateFilter]);
 
   return (
@@ -303,20 +314,23 @@ export default function DashboardPage() {
           現在の期間フィルタ: {dateFilter.start} ～ {dateFilter.end}
         </div>
 
-       <h2 className="text-2xl font-bold mb-4">産学連携データ</h2>
-      <div className="grid grid-cols-2 gap-6">
-      <ChartCard title="特許出願件数推移">
-  <BarChart
-    data={patents.filter((item) => item.month >= dateFilter.start && item.month <= dateFilter.end)}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey="month" />
-    <YAxis />
-    <Tooltip />
-    <Legend />
-    <Bar dataKey="value" fill="#8884d8" name="特許出願件数" />
-  </BarChart>
-</ChartCard>
+        <h2 className="text-2xl font-bold mb-4">産学連携データ</h2>
+        <div className="grid grid-cols-2 gap-6">
+          <ChartCard title="特許出願件数推移">
+            <BarChart
+              data={patents.filter(
+                (item) =>
+                  item.month >= dateFilter.start && item.month <= dateFilter.end
+              )}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#8884d8" name="特許出願件数" />
+            </BarChart>
+          </ChartCard>
 
           <ChartCard title="学部別出願件数">
             <BarChart data={faculties} layout="vertical">
@@ -329,19 +343,21 @@ export default function DashboardPage() {
             </BarChart>
           </ChartCard>
 
-        <ChartCard title="契約件数推移">
-  <BarChart
-    data={contracts.filter((item) => item.month >= dateFilter.start && item.month <= dateFilter.end)}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey="month" />
-    <YAxis />
-    <Tooltip />
-    <Legend />
-    <Bar dataKey="value" fill="#ffc658" name="契約件数" />
-  </BarChart>
-</ChartCard>
-
+          <ChartCard title="契約件数推移">
+            <BarChart
+              data={contracts.filter(
+                (item) =>
+                  item.month >= dateFilter.start && item.month <= dateFilter.end
+              )}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#ffc658" name="契約件数" />
+            </BarChart>
+          </ChartCard>
 
           <ChartCard title="契約数内訳">
             <PieChart>
@@ -375,21 +391,21 @@ export default function DashboardPage() {
             </PieChart>
           </ChartCard>
 
-        <ChartCard title="特許ライセンス件数推移">
-  <BarChart
-    data={licenseCounts.filter(
-      (item) => item.month >= dateFilter.start && item.month <= dateFilter.end
-    )}
-  >
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis dataKey="month" />
-    <YAxis />
-    <Tooltip />
-    <Legend />
-    <Bar dataKey="value" fill="#00C49F" name="特許ライセンス件数" />
-  </BarChart>
-</ChartCard>
-
+          <ChartCard title="特許ライセンス件数推移">
+            <BarChart
+              data={licenseCounts.filter(
+                (item) =>
+                  item.month >= dateFilter.start && item.month <= dateFilter.end
+              )}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#00C49F" name="特許ライセンス件数" />
+            </BarChart>
+          </ChartCard>
 
           <ChartCard title="特許ライセンス収入推移">
             <LineChart data={licenseRevenue}>
@@ -549,37 +565,18 @@ export default function DashboardPage() {
             </BarChart>
           </ChartCard>
 
-        <ChartCard title="希望職位ランキング">
-          <BarChart data={positionRank} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#ffc658" />
-          </BarChart>
-        </ChartCard>
-      </div>
-    </main>
-  </div>
-);
-
-interface ChartCardProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-function ChartCard({ title, children }: ChartCardProps) {
-  return (
-    <div className="bg-white rounded-xl p-4 shadow">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          {React.isValidElement(children) ? children : <div>No data available</div>}
-        </ResponsiveContainer>
-      </div>
+          <ChartCard title="希望職位ランキング">
+            <BarChart data={positionRank} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill="#ffc658" />
+            </BarChart>
+          </ChartCard>
+        </div>
+      </main>
     </div>
   );
 }
-
-// ChartCard component has been moved to its own file
