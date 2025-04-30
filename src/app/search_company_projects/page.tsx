@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,6 @@ import {
 import { Search } from "lucide-react";
 import { useState } from "react";
 
-// Define specific types for search parameters
-interface SearchParams {
-  keyword: string;
-  budget: string;
-  field: string;
-  deadline: string;
-}
-
 interface FundingItem {
   amount: string;
   company: string;
@@ -38,6 +30,7 @@ export default function SearchCompanyProjects() {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
+  const [researchField, setResearchField] = useState("");
   const [deadlineRange, setDeadlineRange] = useState("");
   const [fundingItems, setFundingItems] = useState<FundingItem[]>([]);
   const [projectDetail, setProjectDetail] = useState<string | null>(null);
@@ -52,25 +45,39 @@ export default function SearchCompanyProjects() {
       alert("キーワード・予算・締切を全て入力してください");
       return;
     }
-  
+
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/matting-projects?keyword=${encodeURIComponent(keyword)}&budget_range=${budgetRange}&deadline_range=${deadlineRange}`
+        `${
+          process.env.NEXT_PUBLIC_API_URL
+        }/matting-projects?keyword=${encodeURIComponent(
+          keyword
+        )}&budget_range=${budgetRange}&deadline_range=${deadlineRange}`
       );
       const data = await response.json();
-  
+
       const projectsArray = data.projects || [];
-      const mappedProjects = projectsArray.map((p: any) => ({
-        id: p.project_id,
-        amount: p.budget,
-        company: p.company_name,
-        title: p.project_title,
-        content: p.project_content,
-        deadline: p.application_deadline,
-        researcher_level: p.preferred_researcher_level,
-      }));
-  
+      const mappedProjects = projectsArray.map(
+        (p: {
+          project_id: string;
+          budget: string;
+          company_name: string;
+          project_title: string;
+          project_content: string;
+          application_deadline: string;
+          preferred_researcher_level: string;
+        }) => ({
+          id: p.project_id,
+          amount: p.budget,
+          company: p.company_name,
+          title: p.project_title,
+          content: p.project_content,
+          deadline: p.application_deadline,
+          researcher_level: p.preferred_researcher_level,
+        })
+      );
+
       setFundingItems(mappedProjects);
     } catch (error) {
       console.error("エラー:", error);
@@ -81,11 +88,13 @@ export default function SearchCompanyProjects() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+    return `${date.getFullYear()}/${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
   };
 
   const formatAmount = (amount: string) => {
-    const numeric = amount.replace(/[^\d]/g, '');
+    const numeric = amount.replace(/[^\d]/g, "");
     return Number(numeric).toLocaleString() + "円";
   };
 
@@ -112,6 +121,8 @@ export default function SearchCompanyProjects() {
                   <Input
                     className="pl-10 bg-white"
                     placeholder="キーワードを入力"
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
                   />
                 </div>
               </CardContent>
@@ -124,23 +135,16 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
+                  <Select value={budgetRange} onValueChange={setBudgetRange}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
                     <SelectContent className="bg-white border border-gray-200 shadow-md">
                       <SelectItem value="50万円〜">50万円〜</SelectItem>
-                      <SelectItem value="100万円〜">
-                        100万円〜
-                      </SelectItem>
-                      <SelectItem value="250万円〜">
-                        250万円〜
-                      </SelectItem>
-                      <SelectItem value="500万円〜">
-                        500万円〜
-                      </SelectItem>
-                      <SelectItem value="750万円〜">
-                        750万円〜
-                      </SelectItem>
+                      <SelectItem value="100万円〜">100万円〜</SelectItem>
+                      <SelectItem value="250万円〜">250万円〜</SelectItem>
+                      <SelectItem value="500万円〜">500万円〜</SelectItem>
+                      <SelectItem value="750万円〜">750万円〜</SelectItem>
                       <SelectItem value="1000万円以上">1000万円以上</SelectItem>
                       <SelectItem value="設定なし">設定なし</SelectItem>
                     </SelectContent>
@@ -162,8 +166,8 @@ export default function SearchCompanyProjects() {
               <CardContent>
                 <div className="relative">
                   <Select
-                    value={searchParams.field}
-                    onValueChange={handleFieldChange}
+                    value={researchField}
+                    onValueChange={setResearchField}
                   >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
@@ -197,6 +201,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
+                  <Select
+                    value={deadlineRange}
+                    onValueChange={setDeadlineRange}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -218,6 +226,7 @@ export default function SearchCompanyProjects() {
             <Button
               size="lg"
               className="h-14 text-lg bg-slate-600 hover:bg-slate-700 w-[300px]"
+              onClick={searchProject}
             >
               検索する
             </Button>
@@ -253,11 +262,21 @@ export default function SearchCompanyProjects() {
                     index % 2 === 0 ? "bg-gray-100" : "bg-white"
                   }`}
                 >
-                  <div className="col-span-1 flex items-center justify-center">{formatAmount(item.amount)}</div>
-                  <div className="col-span-1 flex items-center justify-center">{formatDate(item.deadline)}</div>
-                  <div className="col-span-1 flex items-center justify-center">{item.researcher_level}</div>
-                  <div className="col-span-2 flex items-center justify-center">{item.company}</div>
-                  <div className="col-span-2 flex items-center justify-center">{item.title}</div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    {formatAmount(item.amount)}
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    {formatDate(item.deadline)}
+                  </div>
+                  <div className="col-span-1 flex items-center justify-center">
+                    {item.researcher_level}
+                  </div>
+                  <div className="col-span-2 flex items-center justify-center">
+                    {item.company}
+                  </div>
+                  <div className="col-span-2 flex items-center justify-center">
+                    {item.title}
+                  </div>
                   <div className="col-span-2 flex items-center justify-center">
                     <button
                       className="bg-gray-600 hover:bg-gray-800 text-white px-4 py-1 rounded"
