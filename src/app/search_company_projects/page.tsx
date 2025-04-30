@@ -1,3 +1,5 @@
+"use client";
+
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +12,52 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { useState } from "react";
+
+// Define specific types for search parameters
+interface SearchParams {
+  keyword: string;
+  budget: string;
+  field: string;
+  deadline: string;
+}
 
 export default function SearchCompanyProjects() {
+  // Add state for search parameters with specific types
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    keyword: "",
+    budget: "",
+    field: "",
+    deadline: "",
+  });
+
+  const [isSearched, setIsSearched] = useState(false);
+
+  // Handle search parameter changes
+  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams({ ...searchParams, keyword: e.target.value });
+  };
+
+  const handleBudgetChange = (value: string) => {
+    setSearchParams({ ...searchParams, budget: value });
+  };
+
+  const handleFieldChange = (value: string) => {
+    setSearchParams({ ...searchParams, field: value });
+  };
+
+  const handleDeadlineChange = (value: string) => {
+    setSearchParams({ ...searchParams, deadline: value });
+  };
+
+  // Handle search button click
+  const handleSearch = () => {
+    // This would typically be an API call
+    console.log("Searching with parameters:", searchParams);
+    // Set isSearched to true to indicate a search was performed
+    setIsSearched(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header currentPage="案件検索" />
@@ -35,6 +81,8 @@ export default function SearchCompanyProjects() {
                   <Input
                     className="pl-10 bg-white"
                     placeholder="キーワードを入力"
+                    value={searchParams.keyword}
+                    onChange={handleKeywordChange}
                   />
                 </div>
               </CardContent>
@@ -47,7 +95,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select>
+                  <Select
+                    value={searchParams.budget}
+                    onValueChange={handleBudgetChange}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -84,7 +135,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select>
+                  <Select
+                    value={searchParams.field}
+                    onValueChange={handleFieldChange}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -117,7 +171,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select>
+                  <Select
+                    value={searchParams.deadline}
+                    onValueChange={handleDeadlineChange}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -139,6 +196,7 @@ export default function SearchCompanyProjects() {
             <Button
               size="lg"
               className="h-14 text-lg bg-slate-600 hover:bg-slate-700 w-[300px]"
+              onClick={handleSearch}
             >
               検索する
             </Button>
@@ -148,9 +206,15 @@ export default function SearchCompanyProjects() {
         {/* Results would go here */}
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4">検索結果</h2>
-          <div className="text-center text-gray-500 py-8">
-            検索条件を設定して検索ボタンを押してください
-          </div>
+          {isSearched ? (
+            <div className="text-center text-gray-500 py-8">
+              検索結果はありません。検索条件を変更してお試しください。
+            </div>
+          ) : (
+            <div className="text-center text-gray-500 py-8">
+              検索条件を設定して検索ボタンを押してください
+            </div>
+          )}
         </div>
       </main>
     </div>
