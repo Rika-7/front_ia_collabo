@@ -25,22 +25,20 @@ export default function Component() {
       alert("必須項目（タイトルと依頼詳細）を入力してください");
       return;
     }
-
+  
     const confirmed = confirm("AIが最適な研究者を検索します。実行してよろしいですか？");
     if (!confirmed) return;
-
-    setIsLoading(true); // モーダル表示開始
+  
+    setIsLoading(true);
   
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/search-researchers`, {
+      const response = await fetch("/api/project_registration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: selectedOption,
           title: title,
           description: description,
-          university: "東京科学大学", // 東京科学大学のみ
-          top_k: 10, // 10人の研究者を返す
         }),
       });
   
@@ -51,10 +49,9 @@ export default function Component() {
       console.error("エラー:", error);
       alert("検索中にエラーが発生しました");
     } finally {
-      setIsLoading(false); // 念のため非表示
+      setIsLoading(false);
     }
   };
-  
 
   const industries = [
     { value: "自動車", label: "自動車" },

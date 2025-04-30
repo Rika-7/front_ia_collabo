@@ -42,30 +42,19 @@ export default function SearchCompanyProjects() {
       alert("キーワード・予算・締切を全て入力してください");
       return;
     }
-
+  
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_API_URL
-        }/matting-projects?keyword=${encodeURIComponent(
+        `/api/search_company_projects?keyword=${encodeURIComponent(
           keyword
         )}&budget_range=${budgetRange}&deadline_range=${deadlineRange}`
       );
       const data = await response.json();
-
+  
       const projectsArray = data.projects || [];
-      interface Project {
-        project_id: string;
-        budget: string;
-        company_name: string;
-        project_title: string;
-        project_content: string;
-        application_deadline: string;
-        preferred_researcher_level: string;
-      }
-
-      const mappedProjects = projectsArray.map((p: Project) => ({
+  
+      const mappedProjects = projectsArray.map((p: any) => ({
         id: p.project_id,
         amount: p.budget,
         company: p.company_name,
@@ -74,7 +63,7 @@ export default function SearchCompanyProjects() {
         deadline: p.application_deadline,
         researcher_level: p.preferred_researcher_level,
       }));
-
+  
       setFundingItems(mappedProjects);
     } catch (error) {
       console.error("エラー:", error);
