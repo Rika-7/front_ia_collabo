@@ -96,11 +96,13 @@ export default function DashboardPage() {
     });
   }, []);
 
-  const isInRange = (month: string) =>
-    month >= dateFilter.start && month <= dateFilter.end;
-
   useEffect(() => {
     if (!iaRaw.length) return;
+
+    // Move isInRange inside useEffect to fix the dependency warning
+    const isInRange = (month: string) =>
+      month >= dateFilter.start && month <= dateFilter.end;
+
     const filteredIa = iaRaw.filter((row) => isInRange(row["月"]));
 
     const sum = (arr: IndustryAcademiaRow[], key: keyof IndustryAcademiaRow) =>
@@ -150,6 +152,10 @@ export default function DashboardPage() {
   }, [iaRaw, dateFilter]);
 
   useEffect(() => {
+    // Move isInRange inside useEffect to fix the dependency warning
+    const isInRange = (month: string) =>
+      month >= dateFilter.start && month <= dateFilter.end;
+
     const filteredCompany = companyRaw.filter((row) => isInRange(row["月"]));
     const companyMonthMap: Record<
       string,
@@ -206,6 +212,10 @@ export default function DashboardPage() {
   }, [companyRaw, dateFilter]);
 
   useEffect(() => {
+    // Move isInRange inside useEffect to fix the dependency warning
+    const isInRange = (month: string) =>
+      month >= dateFilter.start && month <= dateFilter.end;
+
     const filteredUniversity = universityRaw.filter((row) =>
       isInRange(row["月"])
     );
