@@ -1,8 +1,14 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 
 export default function MessagePage() {
+    const router = useRouter();
+  
+    const handleSubmit = async () => {
+      router.push("/chat");
+    };
+
   const messages = [
     {
       university: "東京科学大学",
@@ -51,6 +57,7 @@ export default function MessagePage() {
               <div
                 key={index}
                 className="flex justify-between items-center p-4 border rounded bg-gray-100 hover:bg-gray-200 transition"
+                onClick={handleSubmit}
               >
                 <div className="text-sm text-gray-700">
                   <div className="font-semibold">{msg.university}</div>

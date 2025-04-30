@@ -46,7 +46,7 @@ export default function ResearcherRecommendation() {
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
-      <Header currentPage="推薦結果" />
+      <Header currentPage="案件登録" />
 
       <main className="px-20 py-6 bg-gray-50 min-h-[calc(100vh_-_68px)] max-md:px-12 max-md:py-4 max-sm:p-4">
         <header className="mb-8">
