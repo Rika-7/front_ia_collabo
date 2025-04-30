@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { Researcher } from "@/types/project";
@@ -17,11 +17,16 @@ export default function ResearcherComparison() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Project details with default values
+  // Project details with default values - move outside useEffect
+  const category = "研究分野のヒアリング";
+  const title = "プロジェクトタイトル";
+  const description = "プロジェクト詳細";
+
+  // Project details display object
   const projectDetails = {
-    category: "研究分野のヒアリング",
-    title: "プロジェクトタイトル",
-    description: "プロジェクト詳細",
+    category,
+    title,
+    description,
   };
 
   // Navigate to message page on contact
@@ -34,87 +39,84 @@ export default function ResearcherComparison() {
     router.push("/project_registration/recommend");
   };
 
-  useEffect(() => {
-    // Fetch both standard and alternative results simultaneously
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+  // Use the fetchData function
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        // For standard matching results - using your external API
-        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+    try {
+      // For standard matching results - using your external API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-        if (!apiBaseUrl) {
-          throw new Error(
-            "API URL is not configured properly (NEXT_PUBLIC_API_URL is missing)"
-          );
-        }
-
-        // First, get standard matching results
-        const standardResponse = await fetch(
-          `${apiBaseUrl}/search-researchers`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              category: projectDetails.category,
-              title: projectDetails.title,
-              description: projectDetails.description,
-              university: "東京科学大学",
-              top_k: 10,
-            }),
-          }
+      if (!apiBaseUrl) {
+        throw new Error(
+          "API URL is not configured properly (NEXT_PUBLIC_API_URL is missing)"
         );
-
-        if (!standardResponse.ok) {
-          throw new Error(
-            `Standard API responded with status: ${standardResponse.status}`
-          );
-        }
-
-        const standardData = await standardResponse.json();
-        setStandardResults(standardData);
-
-        // Now, use the same results but modify them for the alternative algorithm
-        // Since we don't want to duplicate the API endpoint on the server
-        const alternativeResults: Researcher[] = standardData
-          .map((researcher: Researcher) => {
-            // Apply alternative scoring logic
-            const adjustedScore = Math.min(
-              1.0,
-              Math.max(0.1, researcher.score * (0.5 + Math.random() * 0.7))
-            );
-
-            return {
-              ...researcher,
-              score: adjustedScore,
-              explanation: `代替アルゴリズム評価: ${researcher.explanation}`,
-            };
-          })
-          .sort((a: Researcher, b: Researcher) => b.score - a.score);
-
-        setAlternativeResults(alternativeResults);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(
-          `データの取得中にエラーが発生しました: ${
-            error instanceof Error ? error.message : "不明なエラー"
-          }`
-        );
-        // Keep existing data if available, or set to empty arrays
-        setStandardResults((prevResults) =>
-          prevResults.length ? prevResults : []
-        );
-        setAlternativeResults((prevResults) =>
-          prevResults.length ? prevResults : []
-        );
-      } finally {
-        setIsLoading(false);
       }
-    };
 
+      // First, get standard matching results
+      const standardResponse = await fetch(`${apiBaseUrl}/search-researchers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category,
+          title,
+          description,
+          university: "東京科学大学",
+          top_k: 10,
+        }),
+      });
+
+      if (!standardResponse.ok) {
+        throw new Error(
+          `Standard API responded with status: ${standardResponse.status}`
+        );
+      }
+
+      const standardData = await standardResponse.json();
+      setStandardResults(standardData);
+
+      // Now, use the same results but modify them for the alternative algorithm
+      // Since we don't want to duplicate the API endpoint on the server
+      const alternativeResults: Researcher[] = standardData
+        .map((researcher: Researcher) => {
+          // Apply alternative scoring logic
+          const adjustedScore = Math.min(
+            1.0,
+            Math.max(0.1, researcher.score * (0.5 + Math.random() * 0.7))
+          );
+
+          return {
+            ...researcher,
+            score: adjustedScore,
+            explanation: `代替アルゴリズム評価: ${researcher.explanation}`,
+          };
+        })
+        .sort((a: Researcher, b: Researcher) => b.score - a.score);
+
+      setAlternativeResults(alternativeResults);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(
+        `データの取得中にエラーが発生しました: ${
+          error instanceof Error ? error.message : "不明なエラー"
+        }`
+      );
+      // Keep existing data if available, or set to empty arrays
+      setStandardResults((prevResults) =>
+        prevResults.length ? prevResults : []
+      );
+      setAlternativeResults((prevResults) =>
+        prevResults.length ? prevResults : []
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [category, title, description]);
+
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]); // Only depend on the fetchData function, which has the correct dependencies
 
   // Component for displaying a researcher table
   const ResearcherTable = ({
