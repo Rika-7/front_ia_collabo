@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
@@ -13,6 +14,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { useState } from "react";
+
+// Define specific types for search parameters
+interface SearchParams {
+  keyword: string;
+  budget: string;
+  field: string;
+  deadline: string;
+}
 
 interface FundingItem {
   amount: string;
@@ -102,8 +112,6 @@ export default function SearchCompanyProjects() {
                   <Input
                     className="pl-10 bg-white"
                     placeholder="キーワードを入力"
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
                   />
                 </div>
               </CardContent>
@@ -116,7 +124,6 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select value={budgetRange} onValueChange={(value) => setBudgetRange(value)}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -154,7 +161,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select>
+                  <Select
+                    value={searchParams.field}
+                    onValueChange={handleFieldChange}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -187,7 +197,6 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select value={deadlineRange} onValueChange={(value) => setDeadlineRange(value)}>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -209,7 +218,6 @@ export default function SearchCompanyProjects() {
             <Button
               size="lg"
               className="h-14 text-lg bg-slate-600 hover:bg-slate-700 w-[300px]"
-              onClick={searchProject}
             >
               検索する
             </Button>

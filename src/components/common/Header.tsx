@@ -103,9 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage = "案件検索" }) 
             alt="Profile"
             loading="lazy"
           />
-          <span className="text-sm font-bold text-zinc-800">
-            Satoru Moriaki
-          </span>
+          <span className="text-sm font-bold text-zinc-800">Nao Hosokawa</span>
         </Link>
       </div>
     </header>
