@@ -1,6 +1,5 @@
 "use client";
-
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { useState } from "react";
 
 interface FundingItem {
   amount: string;
@@ -30,7 +28,6 @@ export default function SearchCompanyProjects() {
   const router = useRouter();
   const [keyword, setKeyword] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
-  const [researchField, setResearchField] = useState("");
   const [deadlineRange, setDeadlineRange] = useState("");
   const [fundingItems, setFundingItems] = useState<FundingItem[]>([]);
   const [projectDetail, setProjectDetail] = useState<string | null>(null);
@@ -58,25 +55,25 @@ export default function SearchCompanyProjects() {
       const data = await response.json();
 
       const projectsArray = data.projects || [];
-      const mappedProjects = projectsArray.map(
-        (p: {
-          project_id: string;
-          budget: string;
-          company_name: string;
-          project_title: string;
-          project_content: string;
-          application_deadline: string;
-          preferred_researcher_level: string;
-        }) => ({
-          id: p.project_id,
-          amount: p.budget,
-          company: p.company_name,
-          title: p.project_title,
-          content: p.project_content,
-          deadline: p.application_deadline,
-          researcher_level: p.preferred_researcher_level,
-        })
-      );
+      interface Project {
+        project_id: string;
+        budget: string;
+        company_name: string;
+        project_title: string;
+        project_content: string;
+        application_deadline: string;
+        preferred_researcher_level: string;
+      }
+
+      const mappedProjects = projectsArray.map((p: Project) => ({
+        id: p.project_id,
+        amount: p.budget,
+        company: p.company_name,
+        title: p.project_title,
+        content: p.project_content,
+        deadline: p.application_deadline,
+        researcher_level: p.preferred_researcher_level,
+      }));
 
       setFundingItems(mappedProjects);
     } catch (error) {
@@ -135,7 +132,10 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select value={budgetRange} onValueChange={setBudgetRange}>
+                  <Select
+                    value={budgetRange}
+                    onValueChange={(value) => setBudgetRange(value)}
+                  >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -165,10 +165,7 @@ export default function SearchCompanyProjects() {
               </CardHeader>
               <CardContent>
                 <div className="relative">
-                  <Select
-                    value={researchField}
-                    onValueChange={setResearchField}
-                  >
+                  <Select>
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
                     </SelectTrigger>
@@ -203,7 +200,7 @@ export default function SearchCompanyProjects() {
                 <div className="relative">
                   <Select
                     value={deadlineRange}
-                    onValueChange={setDeadlineRange}
+                    onValueChange={(value) => setDeadlineRange(value)}
                   >
                     <SelectTrigger className="w-full bg-white">
                       <SelectValue placeholder="選択 ▼" />
