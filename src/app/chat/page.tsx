@@ -77,7 +77,7 @@ export default function ChatPage() {
 
         {/* 右サイド：スケジュール（仮） */}
         <aside className="w-1/5 bg-rose-100 p-4 rounded-md text-xs">
-          <h3 className="font-bold text-sm mb-2">2025/04</h3>
+          <h3 className="font-bold text-sm mb-2">2025/05</h3>
           <div className="space-y-1">
             <p>2week：日程調整</p>
             <p>3week：NDA締結・契約</p>
