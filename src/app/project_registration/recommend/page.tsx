@@ -19,7 +19,9 @@ interface Researcher {
 export default function ResearcherRecommendation() {
   const router = useRouter();
   const [researchers, setResearchers] = useState<Researcher[]>([]);
-  const [selectedResearchField, setSelectedResearchField] = useState<string | null>(null);
+  const [selectedResearchField, setSelectedResearchField] = useState<
+    string | null
+  >(null);
   const [recommendReason, setRecommendReason] = useState<string | null>(null);
 
   const handleSubmit = async () => {
@@ -52,9 +54,7 @@ export default function ResearcherRecommendation() {
         <header className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">推薦された研究者</h2>
-            <div className="text-right">
-              レコメンド数 {researchers.length}
-            </div>
+            <div className="text-right">レコメンド数 {researchers.length}</div>
           </div>
         </header>
 
@@ -82,15 +82,21 @@ export default function ResearcherRecommendation() {
               </div>
               <div className="col-span-3">
                 <div>{researcher.affiliation}</div>
-                <div className="text-sm text-gray-600">{researcher.university}</div>
+                <div className="text-sm text-gray-600">
+                  {researcher.university}
+                </div>
               </div>
               <div className="col-span-2">{researcher.position}</div>
-              <div className="col-span-1 text-center">{researcher.score.toFixed(2)}</div>
+              <div className="col-span-1 text-center">
+                {researcher.score.toFixed(2)}
+              </div>
 
               <div className="col-span-1 text-center">
                 <button
                   className="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded"
-                  onClick={() => setSelectedResearchField(researcher.explanation)}
+                  onClick={() =>
+                    setSelectedResearchField(researcher.explanation)
+                  }
                 >
                   表示
                 </button>
@@ -99,7 +105,9 @@ export default function ResearcherRecommendation() {
               <div className="col-span-1 text-center">
                 <button
                   className="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded"
-                  onClick={() => setSelectedResearchField(researcher.research_field)}
+                  onClick={() =>
+                    setSelectedResearchField(researcher.research_field)
+                  }
                 >
                   表示
                 </button>
