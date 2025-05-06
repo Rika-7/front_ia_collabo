@@ -95,7 +95,7 @@ export default function ResearcherRecommendation() {
                 <button
                   className="bg-gray-500 hover:bg-gray-700 text-white px-3 py-1 rounded"
                   onClick={() =>
-                    setSelectedResearchField(researcher.explanation)
+                    setRecommendReason(researcher.explanation)
                   }
                 >
                   表示
@@ -133,7 +133,7 @@ export default function ResearcherRecommendation() {
           {/* モーダル本体 */}
           <div className="relative z-50 flex items-center justify-center h-full">
             <div className="bg-white p-6 rounded shadow-lg max-w-md w-full mx-4">
-              <h2 className="text-lg font-bold mb-4">研究分野</h2>
+              <h2 className="text-lg font-bold mb-4">推薦理由</h2>
               <p className="mb-6">{recommendReason}</p>
               <div className="text-right">
                 <button

@@ -323,6 +323,30 @@ export default function DashboardPage() {
         <div className="text-sm text-gray-500 mb-8">
           現在の期間フィルタ: {dateFilter.start} ～ {dateFilter.end}
         </div>
+        <div className="flex justify-end gap-4 mt-2">
+  <a
+    href="/data/industry_academia_dataset.csv"
+    download
+    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded"
+  >
+
+産学連携データCSV
+  </a>
+  <a
+    href="/data/company_data.csv"
+    download
+    className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+  >
+    企業データCSV
+  </a>
+  <a
+    href="/data/university_data.csv"
+    download
+    className="bg-purple-500 hover:bg-purple-600 text-white text-sm px-4 py-2 rounded"
+  >
+    大学データCSV
+  </a>
+</div>
 
         <h2 className="text-2xl font-bold mb-4">産学連携データ</h2>
         <div className="grid grid-cols-2 gap-6">
