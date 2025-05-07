@@ -1,51 +1,45 @@
 import { createServer } from "http";
+import { parse } from "url";
 import next from "next";
-import { join } from "path";
-import { existsSync, readdirSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+// Get the equivalent of __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Always use production mode when deployed
-const app = next({ dev: false });
+const dev = false;
+const app = next({
+  dev,
+  dir: __dirname,
+  conf: {
+    distDir: ".next",
+  },
+});
+
 const handle = app.getRequestHandler();
 const port = process.env.PORT || 3000;
 
-// Debug logging to help troubleshoot
-console.log("Current working directory:", process.cwd());
-console.log("Directory contents:", readdirSync(process.cwd()));
+// Log startup information to help with debugging
+console.log("Starting Next.js server in standalone mode");
+console.log("Current working directory:", __dirname);
+console.log("Environment:", process.env.NODE_ENV);
 
-// Look for the Next.js build directory in various locations
-const possibleNextDirs = [
-  join(process.cwd(), ".next"),
-  join(process.cwd(), "standalone", ".next"),
-  join(process.cwd(), ".next/standalone"),
-];
+try {
+  await app.prepare();
 
-let foundNextDir = null;
-for (const dir of possibleNextDirs) {
-  if (existsSync(dir)) {
-    console.log(`Found Next.js build directory at: ${dir}`);
-    foundNextDir = dir;
-    break;
-  }
-}
+  createServer((req, res) => {
+    // Parse the request URL
+    const parsedUrl = parse(req.url, true);
 
-if (!foundNextDir) {
-  console.error("ERROR: Could not find Next.js build directory.");
-  console.error(
-    "Please ensure 'next build' runs successfully before starting the server."
-  );
-}
-
-app
-  .prepare()
-  .then(() => {
-    createServer((req, res) => {
-      handle(req, res);
-    }).listen(port, "0.0.0.0", (err) => {
-      if (err) throw err;
-      console.log(`> Ready on port ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Error preparing Next.js app:", err);
-    process.exit(1);
+    // Let Next.js handle the request
+    handle(req, res, parsedUrl);
+  }).listen(port, "0.0.0.0", (err) => {
+    if (err) throw err;
+    console.log(`> Ready on http://localhost:${port}`);
   });
+} catch (err) {
+  console.error("Error preparing Next.js app:", err);
+  process.exit(1);
+}
