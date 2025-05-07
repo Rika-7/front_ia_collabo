@@ -26,10 +26,21 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-          
-      - name: Zip artifact for deployment
+      
+      # Don't include node_modules in the deployment package
+      - name: Create deployment package
         run: |
-          zip release.zip ./* .next -qr
+          mkdir deploy-package
+          cp -r .next deploy-package/
+          cp -r public deploy-package/
+          cp package.json deploy-package/
+          cp next.config.js deploy-package/ || true
+          cp package-lock.json deploy-package/ || true
+          
+      - name: Zip optimized artifact for deployment
+        run: |
+          cd deploy-package
+          zip -r ../release.zip ./*
           
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
