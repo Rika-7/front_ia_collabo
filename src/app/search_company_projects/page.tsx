@@ -42,7 +42,7 @@ export default function SearchCompanyProjects() {
       alert("キーワード・予算・締切を全て入力してください");
       return;
     }
-  
+
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -51,19 +51,29 @@ export default function SearchCompanyProjects() {
         )}&budget_range=${budgetRange}&deadline_range=${deadlineRange}`
       );
       const data = await response.json();
-  
+
       const projectsArray = data.projects || [];
-  
-      const mappedProjects = projectsArray.map((p: any) => ({
-        id: p.project_id,
-        amount: p.budget,
-        company: p.company_name,
-        title: p.project_title,
-        content: p.project_content,
-        deadline: p.application_deadline,
-        researcher_level: p.preferred_researcher_level,
-      }));
-  
+
+      const mappedProjects = projectsArray.map(
+        (p: {
+          project_id: string;
+          budget: string;
+          company_name: string;
+          project_title: string;
+          project_content: string;
+          application_deadline: string;
+          preferred_researcher_level: string;
+        }) => ({
+          id: p.project_id,
+          amount: p.budget,
+          company: p.company_name,
+          title: p.project_title,
+          content: p.project_content,
+          deadline: p.application_deadline,
+          researcher_level: p.preferred_researcher_level,
+        })
+      );
+
       setFundingItems(mappedProjects);
     } catch (error) {
       console.error("エラー:", error);
