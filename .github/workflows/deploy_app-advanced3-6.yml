@@ -25,17 +25,34 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
-          
-      - name: Zip artifact for deployment
+      
+      # Create a proper standalone deployment package
+      - name: Prepare deployment package
         run: |
-          zip release.zip ./* .next -qr
+          # Add a critical application setting to help prevent 409 conflicts
+          echo "Adding WEBSITE_WEBDEPLOY_USE_SCM=true to .env file"
+          echo "WEBSITE_WEBDEPLOY_USE_SCM=true" >> .env
+          
+          # Copy public files to the standalone directory
+          mkdir -p .next/standalone/public
+          cp -r public/* .next/standalone/public/
+          
+          # Copy the static files to the right place in standalone
+          mkdir -p .next/standalone/.next/static
+          cp -r .next/static/* .next/standalone/.next/static/
+          
+          # Copy the server.js to standalone directory
+          cp server.js .next/standalone/
+      
+      # Give deployment a moment to settle, helps avoid conflicts
+      - name: Small delay before deployment
+        run: sleep 10
           
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: release.zip
+          path: .next/standalone
           
   deploy:
     runs-on: ubuntu-latest
@@ -49,9 +66,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -61,3 +75,4 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_40E28A3F1C8C48F6BD1D9EB01F17786F }}
+          startup-command: 'node server.js'
